@@ -1,0 +1,18 @@
+--- a/src/drive/msg-drive-item.c
++++ b/src/drive/msg-drive-item.c
+@@ -130,7 +130,14 @@
+       priv->parent_id = g_strdup (json_object_get_string_member (parent_reference, "id"));
+   }
+ 
+-  priv->name = g_strdup (json_object_get_string_member (obj, "name"));
++  if (json_object_has_member (obj, "name"))
++    priv->name = g_strdup (json_object_get_string_member (obj, "name"));
++  else if (json_object_has_member (object, "name"))
++    priv->name = g_strdup (json_object_get_string_member (object, "name"));
++  else {
++    g_set_error (error, MSG_ERROR, MSG_ERROR_FAILED, "Drive item has no name");
++    return NULL;
++  }
+   priv->size = json_object_get_int_member (obj, "size");
+   if (json_object_has_member (object, "eTag"))
+     priv->etag = g_strdup (json_object_get_string_member (object, "eTag"));
